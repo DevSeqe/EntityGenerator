@@ -1,0 +1,30 @@
+{
+    "name" : "codeage/entitygenerator",
+    "description" : "Prettify your source code using model-entity-manager layer architecture.",
+    "type" : "symfony-bundle",
+    "authors" : [{
+        "name" : "Seqe",
+        "email" : "pawel@codeage.pl"
+    }],
+    "keywords" : [
+        "generator command symfony model entity manager service"
+    ],
+    "license" : [
+        "MIT"
+    ],
+    "require" : {
+    },
+    "autoload" : {
+        "psr-0" : {
+            "CodeAge\\EntityGeneratorBundle" : ""
+        }
+    },
+    "target-dir" : "CodeAge/EntityGeneratorBundle",
+    "repositories" : [{
+    }],
+    "extra" : {
+    "branch-alias" : {
+            "dev-master" : "0.9"
+        }
+    }
+}
