@@ -67,6 +67,7 @@ class GenerateEntityCommand extends ContainerAwareCommand {
             } else
             {
                 $field['name'] = $fieldName;
+                $output->writeln("Available types: ".implode(", ",$this->types));
                 $fieldType = $dialog->ask(
                         $output, $this->printQuestion("Field type", false, "String"), 'string', $this->types
                 );

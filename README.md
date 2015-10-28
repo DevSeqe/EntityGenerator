@@ -24,6 +24,10 @@ Now the only thing left to do is enable this bundle in your **AppKernel** file, 
 new CodeAge\EntityGeneratorBundle\EntityGeneratorBundle(),
 ```
 
+***
+As of version **1.1.0** traits were added to AbstractEntity in order to use methods (that I will add someday :) ) even when you cannot extend AbstractEntity for some reason, eg. if you are using FOSUserBundle and you need to extend their User Entity.
+***
+
 ## Usage
 To create new entity use command below:
 ```bash
@@ -83,7 +87,9 @@ $userManager->remove($user); //Done! But you still can disable force-flush
 
 ### Planned changes:
 
- * [ ] Use **traits** instead of simple inheritance, for simplifying implementation of FOSUserBundle :)
- * [ ] Printing list of all possible types for field
+ * [x] ~~Use **traits** instead of simple inheritance, for simplifying implementation of FOSUserBundle :)~~
+ * [x] ~~Printing list of all possible types for field~~
  * [ ] Print all entity configuration when asking if user confirm generation
  * [ ] Ability to modify field after adding it
+ * [ ] Get all types from DBAL
+ * [ ] Enum types generator

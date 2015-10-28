@@ -8,19 +8,11 @@
 
 namespace CodeAge\EntityGeneratorBundle\Entity;
 
-use CodeAge\EntityGeneratorBundle\Entity\EntityTrait;
-
 /**
  * Description of AbstractEntity
  *
  * @author Paweł
  */
-class AbstractEntity {
-
-	use EntityTrait;
-
-    public static function getClassNamespace($entity) {
-        return 'ObjectName';
-    }
+trait EntityTrait {
 
 }
