@@ -32,6 +32,9 @@ As of version **1.1.0** traits were added to AbstractEntity in order to use meth
 To create new entity use command below:
 ```bash
 $ php app/console ca:entity:generate
+
+#for Symfony3
+$ php bin/console ca:entity:generate
 ```
 
 Then you will be asked about name of your new entity, but you need to proceed it with bundle name in which it will be created (Command should autocomplete name of bundle :) ). eg.
