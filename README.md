@@ -92,7 +92,7 @@ $userManager->remove($user); //Done! But you still can disable force-flush
 
  * [x] ~~Use **traits** instead of simple inheritance, for simplifying implementation of FOSUserBundle :)~~
  * [x] ~~Printing list of all possible types for field~~
- * [ ] Print all entity configuration when asking if user confirm generation
+ * [x] ~~Print all entity configuration when asking if user confirm generation
  * [ ] Ability to modify field after adding it
  * [ ] Get all types from DBAL
  * [ ] Enum types generator
