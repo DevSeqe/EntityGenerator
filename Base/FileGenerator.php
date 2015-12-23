@@ -25,18 +25,15 @@ class FileGenerator {
         $bundlePath = str_replace('\\', '/', '\\src\\' . $data['namespace']);
         $path = getcwd() . $bundlePath;
 
-        if (file_exists($path))
-        {
+        if (file_exists($path)) {
             $this->path = $path;
-        } else
-        {
+        } else {
             $this->path = false;
         }
     }
 
     public function generateModel() {
-        if (!$this->path)
-        {
+        if (!$this->path) {
             return false;
         }
         $phpTag = "<?php" . PHP_EOL . PHP_EOL;
@@ -47,26 +44,21 @@ class FileGenerator {
         $classProperties = "\tprotected \$id;" . PHP_EOL;
         $methods = $this->generateGet('id');
         $construct = "";
-        foreach ($this->data['fields'] as $field)
-        {
+        foreach ($this->data['fields'] as $field) {
             $classProperties .= "\tprotected $" . $field['name'] . ";" . PHP_EOL;
-            if ($field['type'] == 'entity' && ($field['attributes']['relation']['type'] == 'o2m' || $field['attributes']['relation']['type'] == 'm2m'))
-            {
+            if ($field['type'] == 'entity' && ($field['attributes']['relation']['type'] == 'o2m' || $field['attributes']['relation']['type'] == 'm2m')) {
                 $construct .= "\t\t\$this->" . $field['name'] . " = new ArrayCollection();" . PHP_EOL;
-                if (!$this->arrayCollection)
-                {
+                if (!$this->arrayCollection) {
                     $uses .= "use Doctrine\\Common\\Collections\\ArrayCollection;" . PHP_EOL;
                     $this->arrayCollection = true;
                 }
                 $methods .= $this->generateFieldMethods($field, true);
-            } else
-            {
+            } else {
                 $methods .= $this->generateFieldMethods($field);
             }
         }
 
-        if ($construct != "")
-        {
+        if ($construct != "") {
             $construct = "\tpublic function __construct(){" . PHP_EOL .
                     $construct .
                     "\t}" . PHP_EOL . PHP_EOL;
@@ -74,8 +66,7 @@ class FileGenerator {
 
         $file = $phpTag . $namespace . $uses . PHP_EOL . $class . $construct . $classProperties . PHP_EOL . PHP_EOL . $methods . PHP_EOL . "}";
 
-        if (!file_exists($this->path . DIRECTORY_SEPARATOR . "Model"))
-        {
+        if (!file_exists($this->path . DIRECTORY_SEPARATOR . "Model")) {
             mkdir($this->path . DIRECTORY_SEPARATOR . "Model");
         }
         file_put_contents($this->path . DIRECTORY_SEPARATOR . "Model" . DIRECTORY_SEPARATOR . $this->data['class'] . ".php", $file);
@@ -83,8 +74,7 @@ class FileGenerator {
     }
 
     public function generateEntity() {
-        if (!$this->path)
-        {
+        if (!$this->path) {
             return false;
         }
         $phpTag = "<?php" . PHP_EOL . PHP_EOL;
@@ -97,8 +87,7 @@ class FileGenerator {
 
         $file = $phpTag . $namespace . $uses . $class . $content . PHP_EOL . "}";
 
-        if (!file_exists($this->path . DIRECTORY_SEPARATOR . "Entity"))
-        {
+        if (!file_exists($this->path . DIRECTORY_SEPARATOR . "Entity")) {
             mkdir($this->path . DIRECTORY_SEPARATOR . "Entity");
         }
         file_put_contents($this->path . DIRECTORY_SEPARATOR . "Entity" . DIRECTORY_SEPARATOR . $this->data['class'] . ".php", $file);
@@ -106,8 +95,7 @@ class FileGenerator {
     }
 
     public function generateManager() {
-        if (!$this->path)
-        {
+        if (!$this->path) {
             return false;
         }
         $phpTag = "<?php" . PHP_EOL . PHP_EOL;
@@ -121,8 +109,7 @@ class FileGenerator {
 
         $file = $phpTag . $namespace . $uses . $class . $content . PHP_EOL . "}";
 
-        if (!file_exists($this->path . DIRECTORY_SEPARATOR . "Manager"))
-        {
+        if (!file_exists($this->path . DIRECTORY_SEPARATOR . "Manager")) {
             mkdir($this->path . DIRECTORY_SEPARATOR . "Manager");
         }
         file_put_contents($this->path . DIRECTORY_SEPARATOR . "Manager" . DIRECTORY_SEPARATOR . $this->data['class'] . "Manager.php", $file);
@@ -133,8 +120,7 @@ class FileGenerator {
         $functions = "";
         $functions .= $this->generateSet($field['name']);
         $functions .= $this->generateGet($field['name']);
-        if ($arrayCollection)
-        {
+        if ($arrayCollection) {
             $functions .= $this->generateAdd($field['name']);
             $functions .= $this->generateRemove($field['name']);
         }
@@ -174,14 +160,11 @@ class FileGenerator {
 
     public function generateService() {
         $serviceXmlFile = $this->path . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "services.xml";
-        if (file_exists($serviceXmlFile))
-        {
+        if (file_exists($serviceXmlFile)) {
             $services = simplexml_load_file($serviceXmlFile);
-            if (!isset($services->parameters))
-            {
+            if (!isset($services->parameters)) {
                 $parameters = $services->addChild('parameters');
-            } else
-            {
+            } else {
                 $parameters = $services->parameters;
             }
 
@@ -195,11 +178,9 @@ class FileGenerator {
 
             $serviceName = strtolower(str_replace("\\", ".", $this->data['namespace']) . "." . $this->data['class']);
 
-            if (!isset($services->services))
-            {
+            if (!isset($services->services)) {
                 $servicesNode = $services->addChild('services');
-            } else
-            {
+            } else {
                 $servicesNode = $services->services;
             }
 
@@ -224,8 +205,7 @@ class FileGenerator {
     public function generateOrm() {
         $this->getBaseOrmXml();
         $fieldsNode = $this->orm->entity;
-        foreach ($this->data['fields'] as $field)
-        {
+        foreach ($this->data['fields'] as $field) {
             switch ($field['type']) {
                 case 'string':
                 case 'integer':
@@ -241,11 +221,15 @@ class FileGenerator {
                     break;
             }
         }
-        $doctrineCatalog = $this->path . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "doctrine";
-        if (!file_exists($doctrineCatalog))
-        {
-            mkdir($doctrineCatalog);
+        $nodes = array('Resources', 'config', 'doctrine');
+        $doctrineCatalog = $this->path;
+        foreach ($nodes as $node) {
+            $doctrineCatalog .= DIRECTORY_SEPARATOR . $node;
+            if (!file_exists($doctrineCatalog)) {
+                mkdir($doctrineCatalog);
+            }
         }
+        
         $filename = $this->data['class'] . ".orm.xml";
         $this->orm->asXml($doctrineCatalog . DIRECTORY_SEPARATOR . $filename);
         return true;
@@ -256,10 +240,8 @@ class FileGenerator {
         $fieldNode->addAttribute('name', $field['name']);
         $fieldNode->addAttribute('column', $field['name']);
         $fieldNode->addAttribute('type', $field['type']);
-        foreach ($field['attributes'] as $name => $attribute)
-        {
-            if ($name == 'nullable' && $attribute)
-            {
+        foreach ($field['attributes'] as $name => $attribute) {
+            if ($name == 'nullable' && $attribute) {
                 $fieldNode->addAttribute($name, "true");
             }
         }
@@ -287,7 +269,7 @@ class FileGenerator {
                 $fieldNode->addAttribute('field', $field['name']);
                 $fieldNode->addAttribute('target-entity', $field['attributes']['relation']['class']);
                 break;
-            case 'o2o': 
+            case 'o2o':
                 $fieldNode = $fieldsNode->addChild('one-to-one');
                 $fieldNode->addAttribute('field', $field['name']);
                 $fieldNode->addAttribute('target-entity', $field['attributes']['relation']['class']);
@@ -297,30 +279,28 @@ class FileGenerator {
                 $fieldNode->addAttribute('field', $field['name']);
                 $fieldNode->addAttribute('target-entity', $field['attributes']['relation']['class']);
                 $joinedEntityName = preg_match('/[^\\\\]*?$/', $field['attributes']['relation']['class'], $matches);
-                if($joinedEntityName){
+                if ($joinedEntityName) {
                     $joinedEntityName = strtolower($matches[0]);
-                }
-                else{
+                } else {
                     $joinedEntityName = strtolower($field['attributes']['relation']['class']);
                 }
-                $joinTableName = strtolower($this->data['class'])."_".$joinedEntityName;
+                $joinTableName = strtolower($this->data['class']) . "_" . $joinedEntityName;
                 $joinTable = $fieldNode->addChild('join-table');
-                $joinTable->addAttribute('name',$joinTableName);
-                
+                $joinTable->addAttribute('name', $joinTableName);
+
                 $joinColumns = $joinTable->addChild('join-columns');
                 $joinColumn = $joinColumns->addChild('join-column');
-                $joinColumn->addAttribute('name',strtolower($this->data['class'])."_id");
-                $joinColumn->addAttribute('referenced-column-name',"id");
-                
+                $joinColumn->addAttribute('name', strtolower($this->data['class']) . "_id");
+                $joinColumn->addAttribute('referenced-column-name', "id");
+
                 $inverseJoinColumns = $joinTable->addChild('inverse-join-columns');
                 $invJoinColumn = $inverseJoinColumns->addChild('join-column');
-                $invJoinColumn->addAttribute('name',$joinedEntityName."_id");
-                $invJoinColumn->addAttribute('referenced-column-name',"id");
-                
+                $invJoinColumn->addAttribute('name', $joinedEntityName . "_id");
+                $invJoinColumn->addAttribute('referenced-column-name', "id");
+
                 break;
         }
-        if ($field['attributes']['nullable'])
-        {
+        if ($field['attributes']['nullable']) {
             $fieldNode->addAttribute('nullable', "true");
         }
     }

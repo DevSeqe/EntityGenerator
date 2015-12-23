@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * 
@@ -38,6 +39,8 @@ class GenerateEntityCommand extends ContainerAwareCommand {
      * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output) {
+
+        $io = new SymfonyStyle($input, $output);
 
         $em = $this->getContainer()->get('doctrine')->getManager();
         $tables = $em->getMetadataFactory()->getAllMetadata();
@@ -91,13 +94,10 @@ class GenerateEntityCommand extends ContainerAwareCommand {
         $this->displayResult($data, $output);
 
         $formatter = $this->getHelper('formatter');
-        
+
         $confirmationQuestion = new ConfirmationQuestion('Confirm generation?', false);
-            if (!$dialog->ask($input, $output, $confirmationQuestion)) {
-                $operationResult = $formatter->formatBlock(
-                    '[ERROR] Generating files aborted.', 'error'
-            );
-            $output->writeln($operationResult);
+        if (!$dialog->ask($input, $output, $confirmationQuestion)) {
+            $io->error('Generating files aborted.');
             return;
         }
 
@@ -108,10 +108,11 @@ class GenerateEntityCommand extends ContainerAwareCommand {
         $fileGenerator->generateService();
         $fileGenerator->generateOrm();
 
-        $operationResult = $formatter->formatBlock(
-                '[OK] Finished creating files for entity ' . $data['bundle'], 'info'
-        );
-        $output->writeln($operationResult);
+//        $operationResult = $formatter->formatBlock(
+//                '[OK] Finished creating files for entity ' . $data['bundle'], 'info'
+//        );
+        $io->success('Finished creating files for entity ' . $data['bundle']);
+//        $output->writeln($operationResult);
     }
 
     private function displayResult($data, $output) {
